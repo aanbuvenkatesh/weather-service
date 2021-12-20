@@ -1,0 +1,4 @@
+include 'weather-prediction-model'
+include 'weather-prediction-core'
+include 'weather-prediction-infra'
+

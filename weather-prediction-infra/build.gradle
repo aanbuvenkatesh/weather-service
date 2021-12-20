@@ -1,0 +1,49 @@
+
+plugins {
+    id 'org.springframework.boot' version '2.6.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "java-library"
+}
+
+dependencies {
+    api project(':weather-prediction-core')
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def projectDirectory = project.getProjectDir().toString()
+def archiveName = "weather-prediction.jar"
+
+bootJar {
+    launchScript()
+    archiveFileName = archiveName
+}
+
+task preparePackage() {
+    copy {
+        from(projectDirectory + '/src/main/resources/docker')
+        into(new File(projectDirectory + '/build/temp-pack/'))
+    }
+    copy {
+        from(projectDirectory + '/build/libs/'+archiveName)
+        into(new File(projectDirectory + '/build/temp-pack/app'))
+    }
+}
+
+task finalZip(type: Zip) {
+    from(projectDirectory + '/build/temp-pack/')
+    archiveFileName = "weather-services-" + project.getRootProject().version.toString() + ".zip"
+    destinationDirectory = file(projectDirectory + '/build/')
+}
+
+task packaging() {
+    tasks.packaging.dependsOn('preparePackage')
+    tasks.packaging.dependsOn('finalZip')
+    tasks.findByName('finalZip').mustRunAfter('preparePackage')
+}

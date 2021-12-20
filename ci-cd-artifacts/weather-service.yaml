@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Cloudformation Template to create the Infrastructure'
+Parameters:
+  Subnets:
+    Type: CommaDelimitedList
+    Default: "subnet-087f6f2d57df49da5,subnet-00d9794cbb63bb95f,subnet-09c92d75ddb3ff54e"
+  VpcId:
+    Type: String
+    Default: "vpc-01ce237fbda283d23"
+  ElbSecurityGroup:
+    Type: String
+    Default: "sg-0aed7cfdb67456521"
+  ECSSecurityGroup:
+    Type: String
+    Default: "sg-00ee7d20607f4db33"
+  Environment:
+    Type: String
+    Default: "dev"
+  ServiceName:
+    Type: String
+    Default: "weather-service"
+  MinimumClusterSize:
+    Type: String
+    Default: "1"
+  MaximumClusterSize:
+    Type: String
+    Default: "2"
+  DesiredClusterSize:
+    Type: String
+    Default: "2"
+  ContainerImage:
+    Type: String
+    Default: "935786470911.dkr.ecr.ap-south-1.amazonaws.com/weather-service:latest"
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${ServiceName}-cluster
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [!Ref 'EC2Role']
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier: !Ref Subnets
+      LaunchConfigurationName: !Ref 'ECSAutoscalingLC'
+      MinSize: !Sub ${MinimumClusterSize}
+      MaxSize: !Sub ${MaximumClusterSize}
+      DesiredCapacity: !Sub ${DesiredClusterSize}
+  ECSAutoscalingLC:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: 'ami-05c965bf5566e4071'
+      SecurityGroups:
+        - !Ref ECSSecurityGroup
+      InstanceType: 't2.micro'
+      IamInstanceProfile: !Ref 'EC2InstanceProfile'
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash
+          echo ECS_CLUSTER=weather-service-cluster >> /etc/ecs/ecs.config
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+  ECSServicePolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "ecs-root"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action: ['ecs:*', 'logs:*', 'ecr:*', 's3:*']
+          Resource: '*'
+      Roles: [!Ref 'EC2Role']
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: LoadBalancerListener  
+    Properties:
+      Cluster: !Ref ECSCluster
+      Role: !Ref ServiceRole
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      LoadBalancers:
+        - ContainerName: "weather-service"
+          ContainerPort: 8080
+          TargetGroupArn: !Ref TargetGroup
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: weather-service
+      ContainerDefinitions:
+        - Name: weather-service
+          Essential: true
+          Image: !Ref ContainerImage
+          Memory: 128
+          PortMappings:
+            - ContainerPort: 8080
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref CloudWatchLogsGroup
+              awslogs-region: !Ref AWS::Region
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VpcId
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /actuator/health
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+  ServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ecs-service-${AWS::StackName}
+      Path: /
+      AssumeRolePolicyDocument: |
+        {
+            "Statement": [{
+                "Effect": "Allow",
+                "Principal": { "Service": [ "ecs.amazonaws.com" ]},
+                "Action": [ "sts:AssumeRole" ]
+            }]
+        }
+      Policies:
+        - PolicyName: !Sub ecs-service-${AWS::StackName}
+          PolicyDocument:
+            {
+              "Version": "2012-10-17",
+              "Statement":
+                [
+                  {
+                    "Effect": "Allow",
+                    "Action":
+                      [
+                        "ec2:AuthorizeSecurityGroupIngress",
+                        "ec2:Describe*",
+                        "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                        "elasticloadbalancing:Describe*",
+                        "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                        "elasticloadbalancing:DeregisterTargets",
+                        "elasticloadbalancing:DescribeTargetGroups",
+                        "elasticloadbalancing:DescribeTargetHealth",
+                        "elasticloadbalancing:RegisterTargets"
+                      ],
+                    "Resource": "*"
+                  }
+                ]
+            }
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref AWS::StackName
+      RetentionInDays: 365
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub ${ServiceName}-alb
+      Scheme: internet-facing
+      Subnets: !Ref Subnets
+      SecurityGroups:
+        - !Ref ElbSecurityGroup
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref TargetGroup
