@@ -32,18 +32,18 @@ task preparePackage() {
     }
     copy {
         from(projectDirectory + '/build/libs/'+archiveName)
-        into(new File(projectDirectory + '/build/temp-pack/app'))
+        into(new File(projectDirectory + '/build/temp-pack/'))
     }
 }
 
 task finalZip(type: Zip) {
     from(projectDirectory + '/build/temp-pack/')
-    archiveFileName = "weather-services-" + project.getRootProject().version.toString() + ".zip"
+    archiveFileName = "weather-service-app-" + project.getRootProject().version.toString() + ".zip"
     destinationDirectory = file(projectDirectory + '/build/')
 }
 
-task packaging() {
-    tasks.packaging.dependsOn('preparePackage')
-    tasks.packaging.dependsOn('finalZip')
+task app_package() {
+    tasks.app_package.dependsOn('preparePackage')
+    tasks.app_package.dependsOn('finalZip')
     tasks.findByName('finalZip').mustRunAfter('preparePackage')
 }
