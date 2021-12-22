@@ -6,4 +6,4 @@ if [ -z "$DOCKER_ENV_LOCATION" ]; then export DOCKER_ENV_LOCATION=config ;fi
 cp -f ${DOCKER_ENV_LOCATION}/config.env .env
 
 # Now run Docker Compose
-docker-compose -f weather-service.yaml build
+docker compose -f weather-service.yaml build
