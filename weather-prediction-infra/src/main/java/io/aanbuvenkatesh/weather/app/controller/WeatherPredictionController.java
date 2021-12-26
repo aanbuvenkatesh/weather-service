@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/weather/forecast")
+@RequestMapping("/weather/v1")
 public class WeatherPredictionController {
 
-    private static final String GET_WEATHER_FORECAST = "/{city}";
+    private static final String GET_WEATHER_FORECAST = "/forecast/{city}";
     private static final String CITY = "city";
 
     private WeatherService weatherService;

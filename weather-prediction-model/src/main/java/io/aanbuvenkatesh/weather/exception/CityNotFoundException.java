@@ -1,5 +1,10 @@
 package io.aanbuvenkatesh.weather.exception;
 
+/**
+ * {@code CityNotFoundException} is thrown when the provided city could not be found in weather service.
+ *
+ * @author aanbuvenkatesh
+ */
 public class CityNotFoundException extends WeatherServiceException {
 
     private static final int HTTP_STATUS = 404;

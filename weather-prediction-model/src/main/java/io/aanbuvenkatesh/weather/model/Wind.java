@@ -1,5 +1,10 @@
 package io.aanbuvenkatesh.weather.model;
 
+/**
+ * Wind class contains the information about the wind speed, deg and gust.
+ *
+ * @author  aanbuvenkatesh
+ */
 public class Wind {
     private Float speed;
     private Float deg;

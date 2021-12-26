@@ -3,6 +3,11 @@ package io.aanbuvenkatesh.weather.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Weather class contains the weather data required for forecast.
+ *
+ * @author  aanbuvenkatesh
+ */
 public class Weather {
 
     private Float temperature;

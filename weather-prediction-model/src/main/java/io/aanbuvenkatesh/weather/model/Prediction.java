@@ -1,5 +1,10 @@
 package io.aanbuvenkatesh.weather.model;
 
+/**
+ * Prediction class contains the weather forecast information.
+ *
+ * @author  aanbuvenkatesh
+ */
 public class Prediction {
 
     private Integer id;

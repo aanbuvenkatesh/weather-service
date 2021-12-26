@@ -1,5 +1,10 @@
 package io.aanbuvenkatesh.weather.exception;
 
+/**
+ * {@code ServiceErrorException} is thrown when unexpected error happens in the while forecasting the weather.
+ *
+ * @author aanbuvenkatesh
+ */
 public class ServiceErrorException extends WeatherServiceException{
 
     private static final int HTTP_STATUS = 500;

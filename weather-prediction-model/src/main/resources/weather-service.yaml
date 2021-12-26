@@ -1,0 +1,79 @@
+openapi: 3.0.1
+info:
+  title: Weather Service
+  description: 'Weather Service provides the information about '
+  contact:
+    email: anbuvenkatesh.a@outlook.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/weather/v1
+tags:
+  - name: Forecast
+    description: Weather Forecast
+paths:
+  /forecast/{city}:
+    get:
+      tags:
+        - Forecast
+      summary: Get weather forecast for a particular city.
+      operationId: getWeatherForecast
+      parameters:
+        - name: city
+          in: path
+          description: City for weather forecast
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResponse'
+        404:
+          description: City not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardErrorResponse'
+components:
+  schemas:
+    StandardErrorResponse:
+      properties:
+        code:
+          description: Error Code
+          type: string
+        message:
+          description: Description of the Error Message
+          type: string
+    PredictionResponse:
+      properties:
+        weather:
+          $ref: '#/components/schemas/WeatherResponse'
+    WeatherResponse:
+      properties:
+        temperature:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemperatureResponse'
+        prediction:
+          type: string
+          example: "Carry umbrella"
+    TemperatureResponse:
+      properties:
+        temperature:
+          type: string
+        temperatureMaximum:
+          type: string
+        temperatureMinimum:
+          type: string
