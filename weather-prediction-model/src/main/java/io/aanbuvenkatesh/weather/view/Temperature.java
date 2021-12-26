@@ -2,13 +2,13 @@ package io.aanbuvenkatesh.weather.view;
 
 import io.aanbuvenkatesh.weather.model.Weather;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Temperature {
 
-    private Temperature(Float temperature, Float temperatureMaximum, Float temperatureMinimum, LocalDate datetime) {
+    private Temperature(Float temperature, Float temperatureMaximum, Float temperatureMinimum, LocalDateTime datetime) {
         this.temperature = temperature;
         this.temperatureMaximum = temperatureMaximum;
         this.temperatureMinimum = temperatureMinimum;
@@ -18,14 +18,14 @@ public class Temperature {
     private Float temperature;
     private Float temperatureMaximum;
     private Float temperatureMinimum;
-    private LocalDate datetime;
+    private LocalDateTime datetime;
 
     public static List<Temperature> from(List<Weather> weather) {
         return weather.stream().map(statistics -> new Temperature.Builder()
-                .setTemperature(statistics.getTemperature())
-                .setTemperatureMaximum(statistics.getTemperatureMaximum())
-                .setTemperatureMinimum(statistics.getTemperatureMinimum())
-                .setDatetime(statistics.getDatetime()).build())
+                        .setTemperature(statistics.getTemperature())
+                        .setTemperatureMaximum(statistics.getTemperatureMaximum())
+                        .setTemperatureMinimum(statistics.getTemperatureMinimum())
+                        .setDatetime(statistics.getDatetime()).build())
                 .collect(Collectors.toList());
     }
 
@@ -53,11 +53,11 @@ public class Temperature {
         this.temperature = temperature;
     }
 
-    public LocalDate getDatetime() {
+    public LocalDateTime getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(LocalDate datetime) {
+    public void setDatetime(LocalDateTime datetime) {
         this.datetime = datetime;
     }
 
@@ -65,7 +65,7 @@ public class Temperature {
         private Float temperature;
         private Float temperatureMaximum;
         private Float temperatureMinimum;
-        private LocalDate datetime;
+        private LocalDateTime datetime;
 
         public Builder setTemperatureMaximum(Float temperatureMaximum) {
             this.temperatureMaximum = temperatureMaximum;
@@ -82,7 +82,7 @@ public class Temperature {
             return this;
         }
 
-        public Builder setDatetime(LocalDate datetime) {
+        public Builder setDatetime(LocalDateTime datetime) {
             this.datetime = datetime;
             return this;
         }

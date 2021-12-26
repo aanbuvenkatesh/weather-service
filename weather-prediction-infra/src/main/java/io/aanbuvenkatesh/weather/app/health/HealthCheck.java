@@ -9,9 +9,9 @@ public class HealthCheck extends AbstractHealthIndicator {
 
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
-        builder.withDetail("service", "weather-prediction");
-        builder.withDetail("status", Status.HEALTHY);
-        builder.up();
+        builder.withDetail("service", "weather-prediction")
+                .withDetail("status", Status.HEALTHY)
+                .up();
     }
 
     private enum Status {

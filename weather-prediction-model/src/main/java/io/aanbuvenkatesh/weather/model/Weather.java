@@ -1,6 +1,6 @@
 package io.aanbuvenkatesh.weather.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Weather {
@@ -8,7 +8,7 @@ public class Weather {
     private Float temperature;
     private Float temperatureMaximum;
     private Float temperatureMinimum;
-    private LocalDate datetime;
+    private LocalDateTime datetime;
     private List<Prediction> predictions;
     private Wind wind;
 
@@ -52,11 +52,11 @@ public class Weather {
         this.temperature = temperature;
     }
 
-    public LocalDate getDatetime() {
+    public LocalDateTime getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(LocalDate datetime) {
+    public void setDatetime(LocalDateTime datetime) {
         this.datetime = datetime;
     }
 

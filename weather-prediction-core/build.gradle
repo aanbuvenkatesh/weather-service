@@ -4,8 +4,7 @@ plugins{
 
 dependencies {
     api project(':weather-prediction-model')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation libs.bundles.junit5
 }
 
 test {

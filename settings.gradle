@@ -2,3 +2,36 @@ include 'weather-prediction-model'
 include 'weather-prediction-core'
 include 'weather-prediction-infra'
 
+enableFeaturePreview('VERSION_CATALOGS')
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            version('slf4j', '1.7.30')
+            version('junit', '5.7.0')
+            version('spring', '2.6.1')
+            version('aws-sdk', '2.17.102')
+            version('json', '20211205')
+
+            alias('spring-boot').toPluginId('org.springframework.boot').versionRef('spring')
+            alias('spring-boot-dependency').toPluginId('io.spring.dependency-management').version('1.0.11.RELEASE')
+
+            alias('logback').to('org.slf4j', 'slf4j-api').versionRef('slf4j')
+            alias('spring-boot-starter').to('org.springframework.boot', 'spring-boot-starter').versionRef('spring')
+            alias('spring-boot-starter-web').to('org.springframework.boot', 'spring-boot-starter-web').versionRef('spring')
+            alias('spring-boot-starter-actuator').to('org.springframework.boot', 'spring-boot-starter-actuator').versionRef('spring')
+            alias('spring-boot-starter-webflux').to('org.springframework.boot', 'spring-boot-starter-webflux').versionRef('spring')
+            alias('spring-boot-starter-test').to('org.springframework.boot', 'spring-boot-starter-test').versionRef('spring')
+            alias('aws-sdk-java').to('software.amazon.awssdk', 'aws-sdk-java').versionRef('aws-sdk')
+            alias('aws-sdk-ssm').to('software.amazon.awssdk', 'ssm').versionRef('aws-sdk')
+            alias('json').to('org.json', 'json').versionRef('json')
+            alias('junit5-api').to('org.junit.jupiter', 'junit-jupiter-api').versionRef('junit')
+            alias('junit5-runtime').to('org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit')
+
+            bundle('spring', ['spring-boot-starter', 'spring-boot-starter-web', 'spring-boot-starter-actuator', 'spring-boot-starter-webflux'])
+            bundle('spring-test', ['spring-boot-starter-test'])
+            bundle('aws-sdk', ['aws-sdk-java', 'aws-sdk-ssm'])
+            bundle('junit5', ['junit5-api', 'junit5-runtime'])
+        }
+    }
+}

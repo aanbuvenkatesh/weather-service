@@ -1,16 +1,17 @@
 
 plugins {
-    id 'org.springframework.boot' version '2.6.1'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "java-library"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.boot.dependency)
 }
 
 dependencies {
     api project(':weather-prediction-core')
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation libs.bundles.spring
+    implementation libs.bundles.aws.sdk
+    implementation libs.json
+
+    testImplementation libs.bundles.spring.test
 }
 
 test {

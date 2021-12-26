@@ -1,5 +1,6 @@
 package io.aanbuvenkatesh.weather.app.controller;
 
+import io.aanbuvenkatesh.weather.exception.WeatherServiceException;
 import io.aanbuvenkatesh.weather.service.WeatherService;
 import io.aanbuvenkatesh.weather.view.PredictionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class WeatherPredictionController {
     }
 
     @GetMapping(value = GET_WEATHER_FORECAST, produces = "application/json")
-    public ResponseEntity<PredictionResponse> getWeatherStatus(@PathVariable(value = CITY) String city) {
+    public ResponseEntity<PredictionResponse> getWeatherStatus(@PathVariable(value = CITY) String city) throws WeatherServiceException {
         return ResponseEntity.status(HttpStatus.OK).body(weatherService.getWeatherPrediction(city));
     }
 
